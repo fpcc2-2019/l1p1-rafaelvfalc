@@ -24,6 +24,7 @@ boxplot(cg_box, jp_box,
         col = c("blue","purple"),
         border = "brown",
         horizontal = TRUE,
-        notch = TRUE)
+        notch = TRUE,
+        outline=FALSE)
 
 dev.off()

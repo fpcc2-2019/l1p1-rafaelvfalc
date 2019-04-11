@@ -1,5 +1,3 @@
-library(tidyverse)
-
 # Compute entire dataset
 wheater = read.csv("data/clima_cg_jp-semanal.csv",
                     stringsAsFactors = FALSE)
@@ -12,7 +10,11 @@ jp_wheater = wheater[wheater$cidade == "João Pessoa", ]
 
 # Take the mean of the tmedia in each city
 mean_cg = mean(cg_wheater$tmedia, na.rm = TRUE)
-mean_jp = mean(jp_wheater$tmedia, na.rm = TRUE)
+mean_jp = mean(jp_wheater$tmedia[jp_wheater$ano >= 1992], na.rm = TRUE)
+
+mean_cg
+
+mean_jp
 
 # Create the file of the image
 png(file = "bar_wheater.png")

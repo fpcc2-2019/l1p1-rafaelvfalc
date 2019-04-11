@@ -1,0 +1,165 @@
+---
+title: "Conclusions L1P1"
+author: "Rafael Falcao"
+date: "4/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)
+```
+
+This reports takes conclusions using the data about the [wheater](https://github.com/rafaelvfalc/l1p1-rafaelvfalc/blob/master/data/clima_cg_jp-semanal.csv) of Campina Grande and Joao Pessoa, analyzing metrics like the weekly temperature of each city and the amount of rain that occurs at each location.
+
+```{r}
+wheater = read.csv("../data/clima_cg_jp-semanal.csv",stringsAsFactors = FALSE)
+
+summary(wheater)
+```
+
+## Graphs
+
+```{r}
+# Campina Grande dataset
+cg_wheater = wheater[wheater$cidade == "Campina Grande", ]
+
+# Joao Pessoa dataset
+jp_wheater = wheater[wheater$cidade == "João Pessoa", ]
+
+# Take the mean of the tmedia in each city
+mean_cg = mean(cg_wheater$tmedia, na.rm = TRUE)
+mean_jp = mean(jp_wheater$tmedia, na.rm = TRUE)
+
+# Generate the vectors that will be used to plot the graph
+mean_vector = c(mean_cg, mean_jp)
+labels_bar = c("Campina Grande", "João Pessoa")
+
+# Plot the graph
+barplot(mean_vector, names.arg=labels_bar, xlab="City", ylab="Mean Temperature",
+        col="red", main="Mean temperature", border="red")
+```
+
+```{r}
+# Take the mean of the tmedia in each city
+mean_cg = mean(cg_wheater$tmedia, na.rm = TRUE)
+mean_jp = mean(jp_wheater$tmedia[jp_wheater$ano >= 1992], na.rm = TRUE)
+
+# Generate the vectors that will be used to plot the graph
+mean_vector = c(mean_cg, mean_jp)
+labels_bar = c("Campina Grande", "João Pessoa")
+
+# Plot the graph
+barplot(mean_vector, names.arg=labels_bar, xlab="City", ylab="Mean Temperature",
+        col="red", main="Mean temperature from 1992-2019", border="red")
+```
+
+```{r}
+# Generate the variables that will be used to plot the graph
+cg_box <- cg_wheater$tmedia
+jp_box <- jp_wheater$tmedia
+
+# Plot the graph
+boxplot(cg_box, jp_box,
+        main = "Weather Boxplot",
+        names = c("Campina Grande", "João Pessoa"),
+        col = c("orange","red"),
+        border = "brown",
+        horizontal = TRUE,
+        notch = TRUE)
+```
+
+```{r}
+# Take the mean of the tmedia in each city
+mean_cg = mean(cg_wheater$chuva, na.rm = TRUE)
+mean_jp = mean(jp_wheater$chuva, na.rm = TRUE)
+
+# Generate the vectors that will be used to plot the graph
+mean_vector = c(mean_cg, mean_jp)
+labels_bar = c("Campina Grande", "João Pessoa")
+
+# Plot the graph
+barplot(mean_vector, names.arg=labels_bar, xlab="City", ylab="Mean rain",
+        col="blue", main="Mean rain", border="red")
+```
+
+```{r}
+library(dplyr)
+
+# Campina Grande dataset
+cg_wheater = wheater[wheater$cidade == "Campina Grande",]
+cg_wheater_sj = cg_wheater[cg_wheater$mes == "6",]
+
+ano_vector = unique(as.vector(cg_wheater_sj[,8]))
+
+cg_wheather_sj_mean = cg_wheater_sj %>% group_by(ano) %>% summarise_at(vars(-tmedia), funs(mean(., na.rm=TRUE)))
+
+tmin_vector = unlist(cg_wheather_sj_mean[,5], use.names=FALSE)
+
+# Plot the graph
+barplot(tmin_vector, names.arg=ano_vector, xlab="Year", ylab="Mean temperature",
+        col="red", main="Mean temperature (June)", border="red")
+```
+
+```{r}
+# Generate the variables that will be used to plot the graph
+cg_box <- cg_wheater$chuva
+jp_box <- jp_wheater$chuva
+
+# Plot the graph
+boxplot(cg_box, jp_box,
+        main = "Rain Boxplot",
+        names = c("Campina Grande", "João Pessoa"),
+        col = c("blue","purple"),
+        border = "brown",
+        horizontal = TRUE,
+        notch = TRUE)
+```
+
+```{r}
+# Plot the graph
+boxplot(cg_box, jp_box,
+        main = "Rain Boxplot without outlines",
+        names = c("Campina Grande", "João Pessoa"),
+        col = c("blue","purple"),
+        border = "brown",
+        horizontal = TRUE,
+        notch = TRUE,
+        outline = FALSE)
+```
+
+```{r}
+# Generating vectors that will be used to plot the graph
+rain_cg_vector = as.vector(cg_wheater[,6])
+
+# Plot the bar chart.
+plot(rain_cg_vector,type = "o",col = "red", xlab = "Week", ylab = "Rain fall", 
+     main = "Rain fall per week (Campina Grande)")
+```
+
+```{r}
+# Generating vectors that will be used to plot the graph
+rain_jp_vector = as.vector(jp_wheater[,6])
+
+# Plot the bar chart.
+plot(rain_jp_vector,type = "o",col = "blue", xlab = "Week", ylab = "Rain fall", 
+     main = "Rain fall per week (Joao Pessoa)")
+```
+
+
+## Questions and Awnsers
+
+### Which city is the hottest?
+
+Using the graphs 'Mean Temperature' and 'Weather Boxplot' we can easilly state that in general Joao Pessoa can be considered a hotter city in comparison with Campina Grande. Using the data given to take this conclusion, it was noticed that the mean temperature of Joao Pessoa is 27.65318 degrees Celsius (between the years 1988 and 2019) while Campina Grande has the mean temperature of 24.69077 degrees Celsius (between the years 1992 and 2019). Since the range of the years are not equal, it was necessary to slice part of the data about the Joao Pessoa weather out to result in a equal evaluation of the weather of each city. For that reason, a new graph was created (Mean Temperature from 1992-2019) to consider only weather of each city beggining in the year of 1992, and the conclusion did not changed, therefore Joao Pessoa (now with mean temperature with value of 27.68581 degrees Celsius) can be consider in general a hotter city in comparison with Campina Grande.
+
+### What was the coldest São João of CG that is in our data?
+
+For the sake of this conclusion, lets consider that the Sao Joao party occurs during the entire month of June. It was plotted a graph that shows the mean temperature of the June month in each unique year contained in the data provided (graph 'Mean Temperature (June)'). Using this graph we can notice that the year of 2008 had the lower mean of temperature in the weeks of the June month, having the mean value of 17.24 degrees. The closest coldest year in comparison with 2008 was 2018 with the mean value of 17.4 degrees ceusius in the June month.
+
+### In which city does it rain more?
+
+Using the graphs 'Mean rain', 'Rain Boxplot' and 'Rain Bloxplot without outlines' we can easily state that in general it rains more in the city of Joao Pessoa than in Campina Grande. The 'Mean rain' has the strait foward information and easily shows that the mean of rains in Joao Pessoa is higher than the mean of rains in Campina Grande. This conclusion can be explained by the fact that the Joao Pessoa is a seaside town and therefore and consequently more conducive to rainfall. The 'Rain Boxplot without outlines' shows a bit more information that helps to states the fact the during the years of 1992 and 2019 it rained more in Joao Pessoa than in Campina Grande.
+
+### How much does it rain in each city (per week)?
+
+Using the graphs 'Rain fall per week (Campina Grande)' and 'Rain fall per week (Joao Pessoa)' we can have an idea of the level of rain in each week in each city. Comparing both graphs we can notice that the levels of rain in Joao Pessoa are higher than in Campina Grande and also that the peak of the rain fall in Joao Pessoa is almost two times higher that the peak of the rain fall in Campina Grande.
